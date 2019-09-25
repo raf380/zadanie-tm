@@ -31,7 +31,7 @@ class UserController extends AbstractController {
     public function createAction(Request $request, UserPasswordEncoderInterface $passwordEncoder) {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user, array('csrf_protection' => false));
-        
+
         $form->submit($request->request->all());
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -56,11 +56,11 @@ class UserController extends AbstractController {
         }
         return new JsonResponse($errors, Response::HTTP_BAD_REQUEST);
     }
-    
+
     /**
      * @Route("/user/{id}", name="update", methods={"PUT"})
      */
-    public function createAction(Request $request, User $user, UserPasswordEncoderInterface $passwordEncoder) {
+    public function updateAction(Request $request, User $user, UserPasswordEncoderInterface $passwordEncoder) {
         $form = $this->createForm(RegistrationFormType::class, $user, array('csrf_protection' => false));
         $form->submit($request->request->all());
 
@@ -76,7 +76,7 @@ class UserController extends AbstractController {
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return new JsonResponse($user->getId(), Response::HTTP_CREATED);
+            return new JsonResponse('OK', Response::HTTP_OK);
         }
 
         $errors = [];
@@ -85,6 +85,18 @@ class UserController extends AbstractController {
             $errors[] = $error->getMessage();
         }
         return new JsonResponse($errors, Response::HTTP_BAD_REQUEST);
+    }
+
+    /**
+     * @Route("/user/{id}", name="delete", methods={"DELETE"})
+     */
+    public function deleteAction(Request $request, User $user, UserPasswordEncoderInterface $passwordEncoder) {
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        return new JsonResponse('OK', Response::HTTP_OK);
     }
 
 }
