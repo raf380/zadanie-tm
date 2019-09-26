@@ -20,10 +20,13 @@ class UserControllerTest extends WebTestCase {
      
     
     public function test_rejestracja_nowego_uzytkownika() {
+                
         //given
         $client = static::createClient();
+        
+        
         $json = json_encode([
-            'usermail' => 'raf_test',
+            'usermail' => 'raf_test2',
             'plainPassword' => 'password'
         ]);
         //when

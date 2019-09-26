@@ -20,15 +20,15 @@ class UserController extends AbstractController {
     /**
      * @Route("/user/{id}", name="read", methods={"GET"})
      */
-    public function readAction(User $user, SerializerInterface $serilizer, UserPasswordEncoderInterface $passwordEncoder) {
+    public function readAction(User $user, SerializerInterface $serilizer) {
         $data = $serilizer->serialize($user, 'json', ['groups' => 'api']);
-        return new JsonResponse($data, 200);
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
     /**
      * @Route("/user", name="register", methods={"POST"})
      */
-    public function createAction(Request $request, UserPasswordEncoderInterface $passwordEncoder) {
+    public function createAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, \Doctrine\ORM\EntityManagerInterface $entityManager) {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user, array('csrf_protection' => false));
 
@@ -42,7 +42,6 @@ class UserController extends AbstractController {
                     )
             );
 
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -60,7 +59,7 @@ class UserController extends AbstractController {
     /**
      * @Route("/user/{id}", name="update", methods={"PUT"})
      */
-    public function updateAction(Request $request, User $user, UserPasswordEncoderInterface $passwordEncoder) {
+    public function updateAction(Request $request, User $user, UserPasswordEncoderInterface $passwordEncoder, \Doctrine\ORM\EntityManagerInterface $entityManager) {
         $form = $this->createForm(RegistrationFormType::class, $user, array('csrf_protection' => false));
         $form->submit($request->request->all());
 
@@ -72,7 +71,6 @@ class UserController extends AbstractController {
                     )
             );
 
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -90,9 +88,8 @@ class UserController extends AbstractController {
     /**
      * @Route("/user/{id}", name="delete", methods={"DELETE"})
      */
-    public function deleteAction(Request $request, User $user, UserPasswordEncoderInterface $passwordEncoder) {
+    public function deleteAction(User $user, \Doctrine\ORM\EntityManagerInterface $entityManager) {
 
-        $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($user);
         $entityManager->flush();
 
